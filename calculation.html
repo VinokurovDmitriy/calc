@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Компоненты Vue 3</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+<div id="guessAlgorithm">
+    <main-component :min=170111
+                    :max=172987
+                    numbers='01112246789'
+    >
+    </main-component>
+</div>
+<script src="https://unpkg.com/vue@next"></script>
+<script>
+    const app = Vue.createApp({});
+    app.component('main-component', {
+        // props: ['minValue', 'maxValue', 'numbers'],
+        // props: {name: String, age: Number},
+        props: {
+            min: Number,
+            max: Number,
+            numbers: String
+        },
+        data() {
+            return {
+                results: [],
+                inputUser: 0
+            }
+        },
+        methods: {
+            newInput(event) {
+                let newValue = event.target.value.slice(-1)
+                this.inputUser = newValue
+            },
+            getMultiple(number, endValue) {
+                for (let i = 2; i <= endValue; i++) {
+                    if (number % i == 0) {
+                        if (this.checkCorrect(number / i, i, number)) {
+                            if (this.results[number] == undefined) {
+                                this.results[number] = []
+                            }
+                            this.results[number].push({first: i, second: number / i});
+                        }
+                    }
+                }
+            },
+            checkCorrect(first, second, multiple) {
+                let checkMultiple = [...(String(first).split('')), ...(String(second).split('')), ...(String(multiple).split(''))]
+                    .sort().join('')
+                let checkNumbers = (this.numbers + this.inputUser).split('').sort().join('')
+                return checkMultiple == checkNumbers ? true : false
+            },
+            calculate() {
+                let endValue = this.min + (this.max - this.min) / 2
+                for (let i = this.min; i < this.max; i++) {
+                    this.getMultiple(i, endValue)
+                }
+                console.log(this.results)
+            }
+        },
+        template: `
+          <div>
+          <input type="number" @input="newInput" :value="inputUser" placeholder="input number"/>
+          <div>{{ inputUser }}</div>
+          <div>{{ min }}</div>
+          <div>{{ max }}</div>
+          <div>{{ numbers }}</div>
+          <button @click="calculate">dssfdsfs</button>
+          </div>
+        `
+    });
+     app.mount('#guessAlgorithm');
+</script>
+</body>
+</html>
